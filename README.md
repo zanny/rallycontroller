@@ -187,6 +187,14 @@ Button2 HOLD repeat → '+'
 
 ---
 
+## Enclosure 3D Files
+This enclosure design was originally created by Stig Hansen on Thingiverse:
+https://www.thingiverse.com/thing:4370615
+Licensed under Creative Commons Attribution (CC-BY).
+A copy is included in this repository for archival purposes in case the original source becomes unavailable.
+
+---
+
 ## Credits
 
 - Original code: **NordicRally**
