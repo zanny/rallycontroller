@@ -2,7 +2,7 @@
 
 A Bluetooth LE keyboard controller for rally and enduro navigation apps (DMD2, TwoNav, Scenic, etc.), built on an ESP32-S3 Super Mini.
 
-Originally based on work by **NordicRally**, fixed and extended by **Thomas Styles**.
+Originally based on work by **NordicRally**, fixed and extended by **Stathis**.
 
 ---
 
@@ -190,7 +190,7 @@ Button2 HOLD repeat → '+'
 ## Credits
 
 - Original code: **NordicRally**
-- Hardware adaptation and fixes: **Thomas Styles**
+- Hardware adaptation and fixes: **Stathis**
 - Bug fixes, long press, profile system, reconnect handling: **Claude (Anthropic)**
 - BLE Keyboard library: **T-vK** — https://github.com/T-vK/ESP32-BLE-Keyboard
 - Bounce2 library: **Thomas O Fredericks**
