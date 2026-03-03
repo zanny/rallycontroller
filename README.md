@@ -134,7 +134,7 @@ const int Button5 = 6;
 
 | Library | Author | Install via |
 |---------|--------|-------------|
-| ESP32-BLE-Keyboard | T-vK | [GitHub ZIP](https://github.com/T-vK/ESP32-BLE-Keyboard) → Sketch → Include Library → Add .ZIP |
+| ESP32-BLE-Keyboard 0.2.3 | T-vK | Download version 0.2.3 from https://github.com/T-vK/ESP32-BLE-Keyboard/releases/tag/0.2.3 then Sketch → Include Library → Add .ZIP |
 | Bounce2 | Thomas O Fredericks | Arduino Library Manager |
 
 ### ESP32 core version
@@ -181,17 +181,10 @@ Button2 HOLD repeat → '+'
 
 ## Known issues and notes
 
-- **Android stale session** — if power is cut abruptly Android may reconnect with a stale BLE session. The 7 second startup delay (`RECONNECT_DELAY_MS`) gives Android time to clear it. Increase this value if the issue persists.
+- **BleKeyboard library version** — must use version **0.2.3** specifically. Versions 0.3.0 and above have a reconnection bug where Android reconnects but buttons stop working until the device is forgotten and re-paired. Version 0.2.3 fixes this.
+- **Android stale session** — a 7 second startup delay (`RECONNECT_DELAY_MS`) is included to give Android time to clear any stale BLE session after an abrupt power cut.
 - **Profile memory** — the active profile resets to Profile 1 on power cycle. Profile is not saved to flash.
 - **ESP32 core 3.x** — not compatible. Use core 2.0.17.
-
----
-
-## Enclosure 3D Files
-This enclosure design was originally created by Stig Hansen on Thingiverse:
-https://www.thingiverse.com/thing:4370615
-Licensed under Creative Commons Attribution (CC-BY).
-A copy is included in this repository for archival purposes in case the original source becomes unavailable.
 
 ---
 
