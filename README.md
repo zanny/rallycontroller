@@ -74,7 +74,7 @@ The controller broadcasts different names depending on the active profile, visib
 | Profile | Broadcast name |
 |---------|---------------|
 | Profile 1 | **RallyNavi P1** |
-| Profile 2 | **RallyNavi P2** |
+| Profile 2 | **RallyNavi P1** (unchanged) |
 
 This allows you to confirm the active profile at a glance from your tablet's Bluetooth settings or notification shade.
 
@@ -103,7 +103,7 @@ Tap and long press send the same key. Long press repeats the key continuously wh
 ### Switching profiles
 Hold **Button 1 + Button 5 simultaneously for 3 seconds** then release. The profile switches immediately, the new profile is saved to flash, and the broadcast name updates. Serial Monitor confirms the switch:
 ```
-* Switched to Profile 2 — broadcasting as RallyNavi P2 *
+* Switched to Profile 2 *
 < Profile saved to flash >
 ```
 
@@ -163,8 +163,7 @@ const int Button5 = 6;
 
 ### Device names
 ```cpp
-#define DeviceNameP1  "RallyNavi P1"
-#define DeviceNameP2  "RallyNavi P2"
+#define DeviceName  "RallyNavi P1"
 ```
 
 ---
@@ -224,7 +223,7 @@ Connect via USB and open Serial Monitor at **115200 baud** to debug:
 Button1 TAP → '1'
 Button2 HOLD → '+'
 Button2 HOLD repeat → '+'
-* Switched to Profile 2 — broadcasting as RallyNavi P2 *
+* Switched to Profile 2 *
 < Profile saved to flash >
 ```
 
