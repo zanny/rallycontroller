@@ -201,7 +201,7 @@ If the board doesn't enter bootloader mode automatically:
 3. Release once you see `Configuring flash size...`
 
 ### First upload after name change
-If upgrading from a previous version with a different device name (e.g. "RCntrl P.1"), you will need to:
+If upgrading from a previous version with a different device name (e.g. "RallyNavi P1"), you will need to:
 1. Go to Android Bluetooth settings
 2. Forget the old device
 3. Pair fresh with **RallyNavi P1**
