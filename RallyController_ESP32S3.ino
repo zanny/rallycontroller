@@ -5,17 +5,17 @@
 //
 //  Button behaviour:
 //    Profile 1:
-//      Button 1 — tap = '1' | hold = '6' (repeats)
-//      Button 2 — tap = '2' | hold = '+' (repeats)
-//      Button 3 — tap = '3' | hold = '-' (repeats)
-//      Button 4 — tap = '4' | hold = '7' (repeats)
-//      Button 5 — tap = '5' | hold = '8' (repeats)
+//      Button 1 — tap = '1' | hold = '6' (repeats every 300ms)
+//      Button 2 — tap = '2' | hold = '+' (repeats every 300ms)
+//      Button 3 — tap = '3' | hold = '-' (repeats every 300ms)
+//      Button 4 — tap = '4' | hold = '7' (repeats every 300ms)
+//      Button 5 — tap = '5' | hold = '8' (repeats every 300ms)
 //    Profile 2:
-//      Button 1 — tap = '1' | hold = '1' (repeats)
-//      Button 2 — tap = '2' | hold = '2' (repeats)
-//      Button 3 — tap = '3' | hold = '3' (repeats)
-//      Button 4 — tap = '4' | hold = '4' (repeats)
-//      Button 5 — tap = '5' | hold = '5' (repeats)
+//      Button 1 — tap = '1' | hold = '1' (repeats every 150ms)
+//      Button 2 — tap = '2' | hold = '2' (repeats every 150ms)
+//      Button 3 — tap = '3' | hold = '3' (repeats every 150ms)
+//      Button 4 — tap = '4' | hold = '4' (repeats every 150ms)
+//      Button 5 — tap = '5' | hold = '5' (repeats every 150ms)
 //    Profile toggle — hold Button1 + Button5 for 3s
 //    Active profile is saved to flash and restored on boot
 
@@ -36,11 +36,11 @@
 // ---------------------------------------------------------------------------
 // KEY ASSIGNMENTS — Edit these to change what each button sends
 //
-// Profile 1 tap and hold keys must be regular char keys:
-//   e.g. '1', '2', '+', '-', 'a', KEY_F1 ... KEY_F12
+// Profile 1 — tap and hold send different keys
+//   good for navigation actions like pan (tap) and zoom (hold)
 //
-// Profile 2 uses same tap keys as Profile 1 but long press
-// repeats the same key instead of sending a different one.
+// Profile 2 — tap and hold send the same key
+//   hold repeats the same key at keyboard-like speed
 // ---------------------------------------------------------------------------
 
 // Profile 1 — tap keys
@@ -50,21 +50,21 @@
 #define KEY_P1_BTN4       '4'
 #define KEY_P1_BTN5       '5'
 
-// Profile 1 — hold keys (repeats while held)
+// Profile 1 — hold keys (different from tap, repeats at HOLD_REPEAT_MS_P1)
 #define KEY_P1_BTN1_HOLD  '6'
 #define KEY_P1_BTN2_HOLD  '+'
 #define KEY_P1_BTN3_HOLD  '-'
 #define KEY_P1_BTN4_HOLD  '7'
 #define KEY_P1_BTN5_HOLD  '8'
 
-// Profile 2 — tap keys (same as Profile 1)
+// Profile 2 — tap keys
 #define KEY_P2_BTN1       '1'
 #define KEY_P2_BTN2       '2'
 #define KEY_P2_BTN3       '3'
 #define KEY_P2_BTN4       '4'
 #define KEY_P2_BTN5       '5'
 
-// Profile 2 — hold keys (repeats same key as tap)
+// Profile 2 — hold keys (same as tap, repeats at HOLD_REPEAT_MS_P2)
 #define KEY_P2_BTN1_HOLD  '1'
 #define KEY_P2_BTN2_HOLD  '2'
 #define KEY_P2_BTN3_HOLD  '3'
@@ -78,13 +78,18 @@
 //   PROFILE_SWITCH_MS   — how long to hold Button1+Button5 to switch profile
 //   DEBOUNCE_MS         — increase if buttons still multifire
 //   LONG_PRESS_MS       — how long to hold before long press activates
-//   HOLD_REPEAT_MS      — how fast key repeats while held
+//                         same for both profiles
+//   HOLD_REPEAT_MS_P1   — repeat speed for Profile 1 hold keys
+//                         slower (300ms) suits zoom/navigation control
+//   HOLD_REPEAT_MS_P2   — repeat speed for Profile 2 hold keys
+//                         faster (150ms) suits keyboard-like repeat
 // ---------------------------------------------------------------------------
 #define RECONNECT_DELAY_MS  1000
 #define PROFILE_SWITCH_MS   3000
 #define DEBOUNCE_MS         100
 #define LONG_PRESS_MS       500
-#define HOLD_REPEAT_MS      300
+#define HOLD_REPEAT_MS_P1   300
+#define HOLD_REPEAT_MS_P2   150
 
 // ---------------------------------------------------------------------------
 // Pin Assignments  —  ESP32-S3 Super Mini
@@ -162,7 +167,7 @@ void setup() {
 // ---------------------------------------------------------------------------
 // Handle a single button — tap and long press logic
 // ---------------------------------------------------------------------------
-void handleButton(int index, char tapKey, char holdKey) {
+void handleButton(int index, char tapKey, char holdKey, unsigned long repeatMs) {
 
   // Button just pressed — start timer
   if (buttons[index].fell()) {
@@ -181,7 +186,7 @@ void handleButton(int index, char tapKey, char holdKey) {
       Serial.println("Button" + String(index + 1) + " HOLD → '" + holdKey + "'");
       bleKeyboard.write(holdKey);
 
-    } else if (btnState[index].longPressActive && (millis() - btnState[index].lastRepeat > HOLD_REPEAT_MS)) {
+    } else if (btnState[index].longPressActive && (millis() - btnState[index].lastRepeat > repeatMs)) {
       // Repeat while still held
       btnState[index].lastRepeat = millis();
       Serial.println("Button" + String(index + 1) + " HOLD repeat → '" + holdKey + "'");
@@ -241,19 +246,19 @@ void loop() {
 
   // Handle all 5 buttons based on active profile
   if (!toggle_mode) {
-    // Profile 1
-    handleButton(0, KEY_P1_BTN1, KEY_P1_BTN1_HOLD);
-    handleButton(1, KEY_P1_BTN2, KEY_P1_BTN2_HOLD);
-    handleButton(2, KEY_P1_BTN3, KEY_P1_BTN3_HOLD);
-    handleButton(3, KEY_P1_BTN4, KEY_P1_BTN4_HOLD);
-    handleButton(4, KEY_P1_BTN5, KEY_P1_BTN5_HOLD);
+    // Profile 1 — slower repeat suits zoom/navigation control
+    handleButton(0, KEY_P1_BTN1, KEY_P1_BTN1_HOLD, HOLD_REPEAT_MS_P1);
+    handleButton(1, KEY_P1_BTN2, KEY_P1_BTN2_HOLD, HOLD_REPEAT_MS_P1);
+    handleButton(2, KEY_P1_BTN3, KEY_P1_BTN3_HOLD, HOLD_REPEAT_MS_P1);
+    handleButton(3, KEY_P1_BTN4, KEY_P1_BTN4_HOLD, HOLD_REPEAT_MS_P1);
+    handleButton(4, KEY_P1_BTN5, KEY_P1_BTN5_HOLD, HOLD_REPEAT_MS_P1);
   } else {
-    // Profile 2
-    handleButton(0, KEY_P2_BTN1, KEY_P2_BTN1_HOLD);
-    handleButton(1, KEY_P2_BTN2, KEY_P2_BTN2_HOLD);
-    handleButton(2, KEY_P2_BTN3, KEY_P2_BTN3_HOLD);
-    handleButton(3, KEY_P2_BTN4, KEY_P2_BTN4_HOLD);
-    handleButton(4, KEY_P2_BTN5, KEY_P2_BTN5_HOLD);
+    // Profile 2 — faster repeat suits keyboard-like behaviour
+    handleButton(0, KEY_P2_BTN1, KEY_P2_BTN1_HOLD, HOLD_REPEAT_MS_P2);
+    handleButton(1, KEY_P2_BTN2, KEY_P2_BTN2_HOLD, HOLD_REPEAT_MS_P2);
+    handleButton(2, KEY_P2_BTN3, KEY_P2_BTN3_HOLD, HOLD_REPEAT_MS_P2);
+    handleButton(3, KEY_P2_BTN4, KEY_P2_BTN4_HOLD, HOLD_REPEAT_MS_P2);
+    handleButton(4, KEY_P2_BTN5, KEY_P2_BTN5_HOLD, HOLD_REPEAT_MS_P2);
   }
 
 }
