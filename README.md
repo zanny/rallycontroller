@@ -15,6 +15,7 @@ Originally based on work by **NordicRally**, fixed and extended by **Stathis**.
 - **Auto reconnect** — reconnects automatically after power loss or Bluetooth drop
 - **Configurable** — all key assignments and timing settings at the top of the code
 - **Debounce** — clean single-fire on all buttons, no accidental multi-press
+- **Status LED** — slow blink when waiting for connection, solid on when connected
 
 ---
 
@@ -55,11 +56,21 @@ ESP32-S3 Super Mini
 │  GPIO5  ─────────────── Button 4
 │  GPIO6  ─────────────── Button 5
 │                          (all other button legs → shared GND)
+│  GPIO7  ──[330Ω]──┤+ LED -├── GND   (status LED)
 │  GND    ─────────────── Shared negative
 └──────────────────────┘
 ```
 
-No resistors needed — buttons use internal pull-up resistors via `INPUT_PULLUP`.
+No resistors needed for buttons — they use internal pull-up resistors via `INPUT_PULLUP`.
+
+The status LED requires a **330Ω resistor** in series to limit current.
+
+### Status LED (GP7 — left side pin 9)
+
+| LED state | Meaning |
+|-----------|---------|
+| Slow blink (500ms) | Waiting for BLE connection |
+| Solid on | Connected to Android device |
 
 ---
 
@@ -148,8 +159,10 @@ All settings are at the top of the sketch — no need to dig through the code.
 #define RECONNECT_DELAY_MS   1000  // startup delay before advertising (ms)
 #define DEBOUNCE_MS          100   // button debounce interval (ms)
 #define LONG_PRESS_MS        500   // hold duration to trigger long press (ms)
-#define HOLD_REPEAT_MS       300   // repeat speed while held (ms)
+#define HOLD_REPEAT_MS_P1    300   // repeat speed while held, Profile 1 (ms)
+#define HOLD_REPEAT_MS_P2    150   // repeat speed while held, Profile 2 (ms)
 #define PROFILE_SWITCH_MS    3000  // hold time to switch profile (ms)
+#define LED_BLINK_MS         500   // status LED blink interval when waiting (ms)
 ```
 
 ### Pin assignments
@@ -159,6 +172,7 @@ const int Button2 = 2;
 const int Button3 = 4;
 const int Button4 = 5;
 const int Button5 = 6;
+const int LED_PIN = 7;   // Status LED — GP7 (left side pin 9)
 ```
 
 ### Device names
